@@ -29,6 +29,10 @@ BOOKS_PATH = Path("goodreads_books.json")
 INTERACTIONS_PATH = Path("goodreads_interactions.csv")
 BOOK_MAP_PATH = Path("book_id_map.csv")
 
+# Approximate row counts used for tqdm ETA — close enough for progress display
+_APPROX_BOOKS = 2_360_655
+_APPROX_INTERACTION_CHUNKS = 229  # 228 648 343 rows / 1 000 000 per chunk
+
 
 def _remap_indices(keep_mask: np.ndarray) -> np.ndarray:
     """Return array where kept positions get new contiguous indices, others -1."""
@@ -45,7 +49,7 @@ def build_item_lookup(book_map: pd.DataFrame) -> pd.DataFrame:
     records = []
 
     with open(BOOKS_PATH) as f:
-        for line in tqdm(f, desc="Streaming books.json", unit=" books"):
+        for line in tqdm(f, desc="Streaming books.json", unit=" books", total=_APPROX_BOOKS):
             raw = json.loads(line)
             records.append({k: raw.get(k) for k in wanted})
 
@@ -86,8 +90,9 @@ def load_interactions(alpha: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]
                     dtype={"user_id": np.int32, "book_id": np.int32,
                            "is_read": np.int8, "rating": np.int8,
                            "is_reviewed": np.int8}),
-        desc="Chunks",
-        unit=" M rows",
+        desc="Loading interactions",
+        unit=" chunks",
+        total=_APPROX_INTERACTION_CHUNKS,
     ):
         total_read += len(chunk)
         chunk = chunk[chunk["is_read"] == 1]
@@ -122,11 +127,6 @@ def run_training(args) -> None:
 
     # ── 1. Item lookup ────────────────────────────────────────────────────
     log.info("Loading book_id_map …")
-    book_map = pd.read_csv(BOOK_MAP_PATH,
-                           dtype={"book_id_csv": np.int32, "book_id": np.int64})
-    book_map = book_map.rename(columns={"book_id_csv": "book_id_csv_col",
-                                        "book_id": "book_id"})
-    # Normalise column names: book_id_map has book_id_csv and book_id
     book_map = pd.read_csv(BOOK_MAP_PATH)
     book_map.columns = ["book_id_csv", "book_id"]
     book_map["book_id"] = book_map["book_id"].astype(np.int64)
