@@ -1,0 +1,29 @@
+# Large data files — mount as volumes at runtime, never bake into the image
+*.json
+*.csv
+*.parquet
+*.gz
+*.npz
+
+# Trained model artifacts — also mounted as a volume
+models/
+
+# Virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Plans / docs (not needed at runtime)
+*.md

@@ -1,0 +1,28 @@
+services:
+  train:
+    build: .
+    command:
+      - train
+      - --factors
+      - "64"
+      - --iterations
+      - "20"
+    volumes:
+      # Data files (read-only mounts — never bake large files into the image)
+      - ./goodreads_books.json:/app/goodreads_books.json:ro
+      - ./goodreads_interactions.csv:/app/goodreads_interactions.csv:ro
+      - ./book_id_map.csv:/app/book_id_map.csv:ro
+      - ./user_id_map.csv:/app/user_id_map.csv:ro
+      # Trained artifacts are written here and shared with the serve container
+      - ./models:/app/models
+    profiles: [train]
+
+  serve:
+    build: .
+    # command uses the Dockerfile CMD default (serve --host 0.0.0.0 --port 8000)
+    ports:
+      - "8000:8000"
+    volumes:
+      # Read-only mount of the trained model artifacts
+      - ./models:/app/models:ro
+    profiles: [serve]

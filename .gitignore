@@ -1,0 +1,26 @@
+# Large dataset files — download separately, never commit
+*.json
+*.csv
+*.parquet
+*.gz
+*.npz
+
+# Trained model artifacts
+models/
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Claude internal files
+.claude/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
