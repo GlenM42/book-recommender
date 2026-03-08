@@ -14,6 +14,9 @@ dependencies = [
     "uvicorn[standard]>=0.41.0",
 ]
 
+[dependency-groups]
+web-ui = ["jinja2>=3", "httpx>=0.28", "python-multipart>=0.0.20"]
+
 [tool.uv]
 package = false
 dev-dependencies = [
