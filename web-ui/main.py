@@ -14,11 +14,13 @@ from pathlib import Path
 import httpx
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 RECOMMENDER_API_URL = os.getenv("RECOMMENDER_API_URL", "http://localhost:8001")
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
 templates = Jinja2Templates(directory=Path(__file__).parent / "templates")
 
 

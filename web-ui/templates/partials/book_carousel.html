@@ -15,9 +15,7 @@
         {{ book.title }}
       </p>
       <p class="text-xs text-gray-400">
-        work_id: {{ book.work_id }}
-      </p>
-      <p class="text-xs text-gray-400 mt-auto">
+        work_id: {{ book.work_id }} <br>
         {{ book.stat_label }}: {{ book.stat_value }}
       </p>
       <button
@@ -26,9 +24,9 @@
         hx-target="#recommendation-carousels"
         hx-swap="beforeend"
         hx-indicator="#global-spinner"
-        class="mt-1 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-1.5 px-2 rounded-lg transition-colors"
+        class="mt-1 w-full bg-blue-900 hover:bg-blue-800 text-white text-xs font-medium py-1.5 px-2 rounded-lg transition-colors"
       >
-        Get Matrix Factorization (ALS) Recommendation
+        Get Matrix Factorization Recommendation
       </button>
     </div>
     {% endfor %}
