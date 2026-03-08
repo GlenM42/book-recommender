@@ -4,6 +4,7 @@ FastAPI recommendation server.
 Endpoints
 ---------
 GET  /health                   — liveness check + model metadata
+GET  /search?q=...             — search books by title, returns work_ids
 POST /get-als-recommendation   — item-to-item similar books
 """
 
@@ -15,8 +16,8 @@ from typing import Any
 
 import pandas as pd
 import uvicorn
-from fastapi import FastAPI, HTTPException
-from implicit.als import AlternatingLeastSquares
+from fastapi import FastAPI, HTTPException, Query
+from implicit.cpu.als import AlternatingLeastSquares
 from pydantic import BaseModel, Field
 
 log = logging.getLogger(__name__)
@@ -58,8 +59,20 @@ def _load_artifacts() -> None:
     item_lookup = pd.read_parquet(lookup_path)
 
     # work_id → item_idx  (for request lookup)
+    # Multiple editions share the same work_id — pick the one with the most ratings.
+    best_edition = (
+        item_lookup.sort_values("ratings_count", ascending=False)
+        .drop_duplicates(subset="work_id", keep="first")
+    )
     _state["work_id_to_idx"] = dict(
-        zip(item_lookup["work_id"].astype(str), item_lookup["item_idx"].astype(int))
+        zip(best_edition["work_id"].astype(str), best_edition["item_idx"].astype(int))
+    )
+
+    # flat DataFrame for title search (sorted by popularity)
+    _state["search_df"] = (
+        item_lookup[["work_id", "title", "url", "ratings_count"]]
+        .sort_values("ratings_count", ascending=False)
+        .reset_index(drop=True)
     )
 
     # item_idx → {work_id, title, url, ratings_count, author_ids}  (for response)
@@ -86,6 +99,13 @@ app = FastAPI(title="Book Recommender — ALS", lifespan=lifespan)
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
+
+class SearchResult(BaseModel):
+    work_id: str
+    title: str | None
+    url: str | None
+    ratings_count: int | None
+
 
 class RecommendRequest(BaseModel):
     work_id: str = Field(..., description="Goodreads work_id of the seed book")
@@ -118,6 +138,25 @@ def health():
         "factors": info.get("factors"),
         "trained_at": info.get("trained_at"),
     }
+
+
+@app.get("/search", response_model=list[SearchResult])
+def search(
+    q: str = Query(..., min_length=2, description="Title substring to search for"),
+    n: int = Query(20, ge=1, le=100, description="Max results to return"),
+):
+    df = _state["search_df"]
+    mask = df["title"].str.contains(q, case=False, na=False)
+    rows = df[mask].head(n)
+    return [
+        SearchResult(
+            work_id=str(row["work_id"]),
+            title=row["title"] or None,
+            url=row["url"] or None,
+            ratings_count=int(row["ratings_count"]) if pd.notna(row["ratings_count"]) else None,
+        )
+        for _, row in rows.iterrows()
+    ]
 
 
 @app.post("/get-als-recommendation", response_model=RecommendResponse)
