@@ -3,15 +3,10 @@ name = "book-recommender"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "jupyterlab",
-    "ipykernel",
     "pandas",
     "numpy",
-    "matplotlib",
-    "seaborn",
+    "scipy",
     "tqdm",
-    "recommenders",
-    "ipywidgets>=8.1.8",
     "pyarrow>=23.0.1",
     "implicit>=0.7.2",
     "fastapi>=0.135.1",
@@ -20,3 +15,11 @@ dependencies = [
 
 [tool.uv]
 package = false
+dev-dependencies = [
+    "jupyterlab",
+    "ipykernel",
+    "matplotlib",
+    "seaborn",
+    "recommenders",
+    "ipywidgets>=8.1.8",
+]

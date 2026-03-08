@@ -49,8 +49,11 @@ def build_item_lookup(book_map: pd.DataFrame) -> pd.DataFrame:
     records = []
 
     with open(BOOKS_PATH) as f:
-        for line in tqdm(f, desc="Streaming books.json", unit=" books", total=_APPROX_BOOKS):
-            raw = json.loads(line)
+        for line in tqdm(f, desc="Streaming books.json", unit=" books"):
+            try:
+                raw = json.loads(line)
+            except json.JSONDecodeError:
+                continue
             records.append({k: raw.get(k) for k in wanted})
 
     books_df = pd.DataFrame(records)
