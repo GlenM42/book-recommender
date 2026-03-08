@@ -9,7 +9,7 @@ services:
       - "20"
     env_file: .env
     environment:
-      OPENBLAS_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1" # Disabling internal threadpool
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -25,10 +25,12 @@ services:
     build: .
     # command uses the Dockerfile CMD default (serve --host 0.0.0.0 --port 8000)
     env_file: .env
+    environment:
+      OPENBLAS_NUM_THREADS: "1" # Disabling internal threadpool
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       # Read-only mount of the trained model artifacts
       - ./models:/app/models:ro

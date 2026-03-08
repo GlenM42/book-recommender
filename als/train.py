@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from implicit.als import AlternatingLeastSquares
+from implicit.cpu.als import AlternatingLeastSquares
 from scipy.sparse import coo_matrix
 from tqdm import tqdm
 
