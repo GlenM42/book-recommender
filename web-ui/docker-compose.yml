@@ -1,0 +1,11 @@
+services:
+  web-ui:
+    build:
+      context: ..
+      dockerfile: web-ui/Dockerfile
+    ports:
+      - "8999:8999"
+    environment:
+      RECOMMENDER_API_URL: "http://host.docker.internal:8001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
