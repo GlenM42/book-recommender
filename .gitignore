@@ -17,6 +17,9 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
+# Credentials — never commit
+.env
+
 # Claude internal files
 .claude/
 

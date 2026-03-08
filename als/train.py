@@ -226,3 +226,9 @@ def run_training(args) -> None:
     log.info("  %s", model_path)
     log.info("  %s", lookup_path)
     log.info("  %s", info_path)
+
+    from als.storage import s3_configured, upload_artifacts
+    if s3_configured():
+        upload_artifacts(MODELS_DIR)
+    else:
+        log.info("S3 not configured — skipping upload.")
