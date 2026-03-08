@@ -9,6 +9,7 @@ dependencies = [
     "tqdm",
     "pyarrow>=23.0.1",
     "implicit>=0.7.2",
+    "boto3>=1.35",
     "fastapi>=0.135.1",
     "uvicorn[standard]>=0.41.0",
 ]

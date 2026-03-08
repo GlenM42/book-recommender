@@ -39,6 +39,11 @@ def _load_artifacts() -> None:
     lookup_path = MODELS_DIR / "item_lookup.parquet"
     info_path = MODELS_DIR / "training_info.json"
 
+    from als.storage import s3_configured, download_artifacts
+    if s3_configured() and not model_path.exists():
+        log.info("Model not found locally — downloading from S3 …")
+        download_artifacts(MODELS_DIR)
+
     for p in (model_path, lookup_path, info_path):
         if not p.exists():
             raise RuntimeError(
