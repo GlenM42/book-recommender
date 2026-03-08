@@ -7,17 +7,26 @@
   <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .htmx-indicator { display: none; }
+.htmx-indicator { display: none; }
     .htmx-request .htmx-indicator { display: inline-flex; }
     .htmx-request.htmx-indicator { display: inline-flex; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 9999;
+    }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
-  <header class="bg-white shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+<body class="bg-white text-gray-900 min-h-screen flex flex-col">
+  <header class="bg-orange-400">
+    <div class="max-w-5xl mx-auto px-4 py-2 flex flex-col items-center gap-1">
       <span class="text-2xl font-bold tracking-tight">Book Recommender</span>
-      <span class="htmx-indicator items-center gap-2 text-sm text-gray-500" id="global-spinner">
-        <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <span class="htmx-indicator items-center gap-2 text-sm text-gray-700" id="global-spinner">
+        <svg class="animate-spin h-4 w-4 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
         </svg>
@@ -26,13 +35,13 @@
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">
+  <main class="max-w-5xl mx-auto px-4 py-2 flex-1 w-full">
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="border-t border-gray-200 bg-white mt-auto">
-    <div class="max-w-5xl mx-auto px-4 py-4 text-sm text-gray-400 text-center">
-      Made by <a href="https://github.com/GlenM42">GlenM42</a>, 2026
+  <footer class="border-t border-orange-400 bg-orange-400 mt-auto">
+    <div class="max-w-5xl mx-auto px-4 py-4 text-sm text-blue-900 text-center">
+      Made by <a href="https://glen.miasnychenko.com" class="hover:underline">GlenM42</a>, 2026
     </div>
   </footer>
 </body>
