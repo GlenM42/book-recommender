@@ -1,8 +1,8 @@
+FROM ghcr.io/astral-sh/uv:0.10.9 AS uv
 FROM python:3.12-slim
 WORKDIR /app
 
-# Install uv the same way the root Dockerfile does
-COPY --from=ghcr.io/astral-sh/uv:0.10.9 /uv /uvx /usr/local/bin/
+COPY --from=uv /uv /uvx /usr/local/bin/
 
 # Install only what the web-ui needs — no implicit, no numpy, no C compiler required
 RUN uv pip install --system \
