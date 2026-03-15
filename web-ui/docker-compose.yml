@@ -1,11 +1,14 @@
 services:
   web-ui:
-    build:
+    image: book-recommender-web-ui
+    build: # docker compose -f web-ui/docker-compose.yml build
       context: ..
       dockerfile: web-ui/Dockerfile
+      platforms:
+        - linux/arm64
     ports:
       - "8999:8999"
-    environment:
+    environment: # if you run the ui on the same machine as the model
       RECOMMENDER_API_URL: "http://host.docker.internal:8001"
     extra_hosts:
       - "host.docker.internal:host-gateway"
