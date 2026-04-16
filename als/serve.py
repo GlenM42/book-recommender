@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import uvicorn
 from fastapi import FastAPI, HTTPException, Query
@@ -80,6 +81,23 @@ def _load_artifacts() -> None:
         item_lookup
         .set_index("item_idx")[["work_id", "title", "url", "ratings_count", "author_ids"]]
         .to_dict("index")
+    )
+
+    # item indices that have no valid title — excluded from recommendations.
+    # Iterate over every index the model knows about: items absent from idx_to_meta
+    # entirely (no parquet row) must also be excluded, not just those with null titles.
+    # pd.isna() catches both None and float('nan') (how pandas stores missing strings);
+    # `not title` additionally catches empty strings.
+    idx_to_meta = _state["idx_to_meta"]
+    n_model_items = _state["model"].item_factors.shape[0]
+    _state["no_title_items"] = np.array(
+        [
+            idx for idx in range(n_model_items)
+            if idx not in idx_to_meta
+            or pd.isna(idx_to_meta[idx].get("title"))
+            or not idx_to_meta[idx].get("title")
+        ],
+        dtype=np.int32,
     )
 
     with open(info_path) as f:
@@ -172,7 +190,9 @@ def get_recommendation(req: RecommendRequest):
         )
 
     model: AlternatingLeastSquares = _state["model"]
-    similar_ids, scores = model.similar_items(item_idx, N=req.n + 1)
+    similar_ids, scores = model.similar_items(
+        item_idx, N=req.n + 1, filter_items=_state["no_title_items"]
+    )
 
     idx_to_meta = _state["idx_to_meta"]
     seed_meta = idx_to_meta.get(item_idx, {})
