@@ -1,5 +1,11 @@
 <section class="mb-6">
-  <h2 class="text-lg font-semibold mb-3 text-gray-800">{{ heading }}</h2>
+  <div class="flex justify-between items-center mb-3">
+    <h2 class="text-lg font-semibold text-gray-800">{{ heading }}</h2>
+    <button onclick="this.closest('section').remove()"
+      class="text-xs bg-black hover:bg-gray-800 text-white px-3 py-1 rounded-lg transition-colors">
+      Clear
+    </button>
+  </div>
 
   {% if books %}
   <div
@@ -24,7 +30,7 @@
         hx-target="#recommendation-carousels"
         hx-swap="beforeend"
         hx-indicator="#global-spinner"
-        class="mt-1 w-full bg-blue-900 hover:bg-blue-800 text-white text-xs font-medium py-1.5 px-2 rounded-lg transition-colors"
+        class="mt-1 w-full bg-black hover:bg-gray-800 text-white text-xs font-medium py-1.5 px-2 rounded-lg transition-colors"
       >
         Get Matrix Factorization Recommendation
       </button>
