@@ -34,7 +34,7 @@ def _error_html(message: str) -> HTMLResponse:
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 
 
 @app.post("/search", response_class=HTMLResponse)
@@ -52,14 +52,14 @@ async def search(request: Request, q: str = Form(...)):
         return _error_html(f"Could not reach recommender API: {e}")
 
     return templates.TemplateResponse(
+        request,
         "partials/book_carousel.html",
         {
-            "request": request,
             "heading": "Search Results",
             "books": [
                 {
                     "work_id": b["work_id"],
-                    "title": b["title"] or "Unknown Title",
+                    "title": b["title"],
                     "stat_label": "ratings",
                     "stat_value": f'{b["ratings_count"]:,}' if b.get("ratings_count") else "—",
                 }
@@ -86,14 +86,14 @@ async def recommend(request: Request, work_id: str = Form(...)):
 
     seed_title = data.get("title") or work_id
     return templates.TemplateResponse(
+        request,
         "partials/book_carousel.html",
         {
-            "request": request,
             "heading": f"Matrix Factorization (ALS) — similar to: {seed_title}",
             "books": [
                 {
                     "work_id": b["work_id"],
-                    "title": b["title"] or "Unknown Title",
+                    "title": b["title"],
                     "stat_label": "score",
                     "stat_value": f'{b["score"]:.3f}',
                 }
