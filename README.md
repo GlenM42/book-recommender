@@ -12,9 +12,9 @@ The project is split into two independent services:
 | [book-recommender-ui](https://github.com/GlenM42/book-recommender-ui) | FastAPI + Jinja2 web UI that queries the ML API |
 
 ```
-Browser → book-recommender-ui (port 8999)
+Browser → book-recommender-ui
                  ↓ HTTP
-          book-recommender-ml (port 8001)
+          book-recommender-ml
                  ↓ reads
             model artifacts
 ```
